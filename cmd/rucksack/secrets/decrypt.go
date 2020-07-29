@@ -9,16 +9,29 @@ import (
 
 func NewDecrypt() *cobra.Command {
 	var flags struct {
-		Key   string
-		Nonce string
-		File  string
+		Key    string
+		Nonce  string
+		File   string
+		Config string
 	}
+
+	var config secrets.Config
 
 	command := &cobra.Command{
 		Use:   "decrypt [FILE]",
 		Short: "Decrypts file using given key",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := ReadConfigFile(flags.Config, &config); err == nil {
+				if len(flags.Key) == 0 {
+					flags.Key = config.Key
+				}
+
+				if len(flags.Nonce) == 0 {
+					flags.Nonce = config.Nonce
+				}
+			}
+
 			inputFileName := args[0]
 			outputFileName := args[0]
 
@@ -55,6 +68,7 @@ func NewDecrypt() *cobra.Command {
 	command.Flags().StringVar(&flags.Key, "key", "", "Encryption key encoded in Base64")
 	command.Flags().StringVar(&flags.Nonce, "nonce", "", "Encryption nonce (12 symbols)")
 	command.Flags().StringVar(&flags.File, "file", "", "Path to output file")
+	command.Flags().StringVar(&flags.Config, "config", "config/key.json", "Path to config file")
 
 	return command
 }

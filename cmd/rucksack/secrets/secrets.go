@@ -1,6 +1,7 @@
 package secrets
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -20,6 +21,42 @@ func New() *cobra.Command {
 	return command
 }
 
+func CheckFileExists(filename string) error {
+	fileInfo, err := os.Stat(filename)
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("file does not exist: %w", err)
+		}
+
+		return fmt.Errorf("failed to get file info: %w", err)
+	}
+
+	if fileInfo.IsDir() {
+		return fmt.Errorf("file can not be directory")
+	}
+
+	return nil
+}
+
+func ReadConfigFile(filename string, out interface{}) error {
+	if err := CheckFileExists(filename); err != nil {
+		return nil
+	}
+
+	data, err := ReadFile(filename)
+
+	if err != nil {
+		return fmt.Errorf("failed to read config file: %w", err)
+	}
+
+	if err := json.Unmarshal(data, out); err != nil {
+		return fmt.Errorf("failed to unmarshal config file: %w", err)
+	}
+
+	return nil
+}
+
 func WriteFile(filename string, data []byte) error {
 	if err := ioutil.WriteFile(filename, data, 0644); err != nil {
 		return fmt.Errorf("failed to write to file: %w", err)
@@ -29,18 +66,10 @@ func WriteFile(filename string, data []byte) error {
 }
 
 func ReadFile(filename string) ([]byte, error) {
-	fileInfo, err := os.Stat(filename)
+	err := CheckFileExists(filename)
 
-	if err != nil && !os.IsNotExist(err) {
-		return nil, fmt.Errorf("failed to get file info: %w", err)
-	}
-
-	if os.IsNotExist(err) {
-		return nil, fmt.Errorf("file not found: %w", err)
-	}
-
-	if fileInfo.IsDir() {
-		return nil, fmt.Errorf("file can not be directory")
+	if err != nil {
+		return nil, fmt.Errorf("failed to check that file exists: %w", err)
 	}
 
 	data, err := ioutil.ReadFile(filename)
