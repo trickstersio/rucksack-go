@@ -19,26 +19,33 @@ func NewDecrypt() *cobra.Command {
 		Short: "Decrypts file using given key",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			data, err := ReadFile(args[0])
+			inputFileName := args[0]
+			outputFileName := args[0]
+
+			if len(flags.File) > 0 {
+				outputFileName = flags.File
+			}
+
+			data, err := ReadFile(inputFileName)
 
 			if err != nil {
-				return fmt.Errorf("failed to read file %s: %w", args[0], err)
+				return fmt.Errorf("failed to read file %s: %w", inputFileName, err)
 			}
 
 			decryptor, err := secrets.NewAES(flags.Key, flags.Nonce)
 
 			if err != nil {
-				return fmt.Errorf("failed to create decryptor file %s: %w", args[0], err)
+				return fmt.Errorf("failed to create decryptor file %s: %w", inputFileName, err)
 			}
 
 			raw, err := decryptor.Decrypt(data)
 
 			if err != nil {
-				return fmt.Errorf("failed to decrypt file %s: %w", args[0], err)
+				return fmt.Errorf("failed to decrypt file %s: %w", inputFileName, err)
 			}
 
-			if err := WriteFile(flags.File, raw); err != nil {
-				return fmt.Errorf("failed to create output file %s: %w", flags.File, err)
+			if err := WriteFile(outputFileName, raw); err != nil {
+				return fmt.Errorf("failed to create output file %s: %w", outputFileName, err)
 			}
 
 			return nil

@@ -19,26 +19,33 @@ func NewEncrypt() *cobra.Command {
 		Short: "Encrypts file using given key",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			raw, err := ReadFile(args[0])
+			inputFileName := args[0]
+			outputFileName := args[0]
+
+			if len(flags.File) > 0 {
+				outputFileName = flags.File
+			}
+
+			raw, err := ReadFile(inputFileName)
 
 			if err != nil {
-				return fmt.Errorf("failed to read file %s: %w", args[0], err)
+				return fmt.Errorf("failed to read file %s: %w", inputFileName, err)
 			}
 
 			encryptor, err := secrets.NewAES(flags.Key, flags.Nonce)
 
 			if err != nil {
-				return fmt.Errorf("failed to create encryptor for the file %s: %w", args[0], err)
+				return fmt.Errorf("failed to create encryptor for the file %s: %w", inputFileName, err)
 			}
 
 			data, err := encryptor.Encrypt(raw)
 
 			if err != nil {
-				return fmt.Errorf("failed to encrypt file %s: %w", args[0], err)
+				return fmt.Errorf("failed to encrypt file %s: %w", inputFileName, err)
 			}
 
-			if err := WriteFile(flags.File, data); err != nil {
-				return fmt.Errorf("failed to create output file %s: %w", flags.File, err)
+			if err := WriteFile(outputFileName, data); err != nil {
+				return fmt.Errorf("failed to create output file %s: %w", outputFileName, err)
 			}
 
 			return nil
