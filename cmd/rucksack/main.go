@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/trickstersio/rucksack-go/cli/secrets"
+	"github.com/trickstersio/rucksack-go/cmd/rucksack/secrets"
 )
 
 func main() {
