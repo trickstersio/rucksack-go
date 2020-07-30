@@ -1,4 +1,4 @@
-package secrets
+package crypto
 
 func NewNoop() *Noop {
 	return &Noop{}

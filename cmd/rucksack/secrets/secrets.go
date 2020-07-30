@@ -17,6 +17,7 @@ func New() *cobra.Command {
 
 	command.AddCommand(NewEncrypt())
 	command.AddCommand(NewDecrypt())
+	command.AddCommand(NewTokens())
 
 	return command
 }

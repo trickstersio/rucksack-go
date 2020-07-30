@@ -1,4 +1,4 @@
-package secrets
+package crypto
 
 type Config struct {
 	Key   string `json:"key"`

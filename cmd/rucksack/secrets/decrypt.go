@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/trickstersio/rucksack-go/secrets"
+	"github.com/trickstersio/rucksack-go/crypto"
 )
 
 func NewDecrypt() *cobra.Command {
@@ -15,7 +15,7 @@ func NewDecrypt() *cobra.Command {
 		Config string
 	}
 
-	var config secrets.Config
+	var config crypto.Config
 
 	command := &cobra.Command{
 		Use:   "decrypt [FILE]",
@@ -45,7 +45,7 @@ func NewDecrypt() *cobra.Command {
 				return fmt.Errorf("failed to read file %s: %w", inputFileName, err)
 			}
 
-			decryptor, err := secrets.NewAES(flags.Key, flags.Nonce)
+			decryptor, err := crypto.NewAES(flags.Key, flags.Nonce)
 
 			if err != nil {
 				return fmt.Errorf("failed to create decryptor file %s: %w", inputFileName, err)
