@@ -24,11 +24,24 @@ func Test_Params(t *testing.T) {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		assert.Equal(params.UUID, "ad6e7682-19b4-4295-add4-a409687d41ca")
 
-		go func() {
-			assert.Equal(params.UUID, "ad6e7682-19b4-4295-add4-a409687d41ca")
-		}()
+		w.WriteHeader(http.StatusOK)
+	})
+
+	router.HandleFunc("/users/{id}", func(w http.ResponseWriter, r *http.Request) {
+		var params struct {
+			ID int `params:"id"`
+		}
+
+		if err := Params(r, &params); err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
+
+		assert.Equal(params.ID, 100500)
+
+		w.WriteHeader(http.StatusOK)
 	})
 
 	router.HandleFunc("/kitchens", func(w http.ResponseWriter, r *http.Request) {
@@ -42,12 +55,10 @@ func Test_Params(t *testing.T) {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		assert.Equal(params.Limit, int64(500))
+		assert.Equal(params.Offset, int64(100))
 
-		go func() {
-			assert.Equal(params.Limit, int64(500))
-			assert.Equal(params.Offset, int64(100))
-		}()
+		w.WriteHeader(http.StatusOK)
 	})
 
 	server := httptest.NewServer(router)
@@ -59,6 +70,7 @@ func Test_Params(t *testing.T) {
 	urls := []string{
 		fmt.Sprintf("%s/kitchens/ad6e7682-19b4-4295-add4-a409687d41ca", server.URL),
 		fmt.Sprintf("%s/kitchens?offset=100&limit=500", server.URL),
+		fmt.Sprintf("%s/users/%d", server.URL, 100500),
 	}
 
 	for _, url := range urls {

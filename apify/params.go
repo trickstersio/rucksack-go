@@ -38,7 +38,7 @@ func Params(r *http.Request, in interface{}) error {
 		switch kind := fieldValue.Kind(); kind {
 		case reflect.String:
 			fieldValue.SetString(value)
-		case reflect.Int64:
+		case reflect.Int, reflect.Int64:
 			intValue, err := strconv.ParseInt(value, 10, 64)
 
 			if err != nil {
