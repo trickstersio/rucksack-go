@@ -33,6 +33,10 @@ func Params(r *http.Request, in interface{}) error {
 			value = r.URL.Query().Get(options.Key)
 		}
 
+		if len(value) == 0 {
+			continue
+		}
+
 		fieldValue := inElem.Field(i)
 
 		switch kind := fieldValue.Kind(); kind {

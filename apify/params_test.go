@@ -50,6 +50,8 @@ func Test_Params(t *testing.T) {
 			Offset int64 `params:"offset,query"`
 		}
 
+		params.Limit = 500
+
 		if err := Params(r, &params); err != nil {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
@@ -69,7 +71,7 @@ func Test_Params(t *testing.T) {
 
 	urls := []string{
 		fmt.Sprintf("%s/kitchens/ad6e7682-19b4-4295-add4-a409687d41ca", server.URL),
-		fmt.Sprintf("%s/kitchens?offset=100&limit=500", server.URL),
+		fmt.Sprintf("%s/kitchens?offset=100", server.URL),
 		fmt.Sprintf("%s/users/%d", server.URL, 100500),
 	}
 
