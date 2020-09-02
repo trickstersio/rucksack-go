@@ -44,6 +44,13 @@ func Error(err *apierr.Err) BuilderFunc {
 	})
 }
 
+func Header(key string, value string) BuilderFunc {
+	return func(r *Response) error {
+		r.headers[key] = value
+		return nil
+	}
+}
+
 // JSON saves specified body in form of JSON object to the response
 func JSON(body interface{}) BuilderFunc {
 	return func(r *Response) error {
