@@ -50,6 +50,22 @@ func Params(r *http.Request, in interface{}) error {
 			}
 
 			fieldValue.SetInt(intValue)
+		case reflect.Float32:
+			floatValue, err := strconv.ParseFloat(value, 32)
+
+			if err != nil {
+				return fmt.Errorf("invalid float value: %w", err)
+			}
+
+			fieldValue.SetFloat(floatValue)
+		case reflect.Float64:
+			floatValue, err := strconv.ParseFloat(value, 64)
+
+			if err != nil {
+				return fmt.Errorf("invalid float value: %w", err)
+			}
+
+			fieldValue.SetFloat(floatValue)
 		default:
 			return fmt.Errorf("unsupported field kind %s", kind)
 		}

@@ -63,6 +63,23 @@ func Test_Params(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	router.HandleFunc("/store", func(w http.ResponseWriter, r *http.Request) {
+		var params struct {
+			Latitude  float64 `params:"latitude,query"`
+			Longitude float64 `params:"longitude,query"`
+		}
+
+		if err := Params(r, &params); err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
+
+		assert.Equal(params.Latitude, 56.882832)
+		assert.Equal(params.Longitude, 37.331417)
+
+		w.WriteHeader(http.StatusOK)
+	})
+
 	server := httptest.NewServer(router)
 
 	defer func() {
@@ -73,6 +90,7 @@ func Test_Params(t *testing.T) {
 		fmt.Sprintf("%s/kitchens/ad6e7682-19b4-4295-add4-a409687d41ca", server.URL),
 		fmt.Sprintf("%s/kitchens?offset=100", server.URL),
 		fmt.Sprintf("%s/users/%d", server.URL, 100500),
+		fmt.Sprintf("%s/store?latitude=%f&longitude=%f", server.URL, 56.882832, 37.331417),
 	}
 
 	for _, url := range urls {
