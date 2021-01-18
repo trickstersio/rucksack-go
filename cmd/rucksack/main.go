@@ -4,18 +4,27 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/trickstersio/rucksack-go/cmd/rucksack/root"
 	"github.com/trickstersio/rucksack-go/cmd/rucksack/secrets"
 )
 
 func main() {
-	root := &cobra.Command{
+	cli := &cobra.Command{
 		Use:   "rucksack",
 		Short: "Command line tools for rucksack project",
 	}
 
-	root.AddCommand(secrets.New())
+	cli.PersistentFlags().String("name", "", "Application name")
+	cli.PersistentFlags().String("env", "development", "Application environment")
 
-	if err := root.Execute(); err != nil {
+	cli.AddCommand(root.NewUp())
+	cli.AddCommand(root.NewRun())
+	cli.AddCommand(root.NewDown())
+	cli.AddCommand(root.NewSeed())
+
+	cli.AddCommand(secrets.New())
+
+	if err := cli.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
